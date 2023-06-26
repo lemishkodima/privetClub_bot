@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, F
 import logging
 
 
-BOT_TOKEN = '6250154933:AAGiuVuTLqPcXM8bx1vJRM2BK2XShmEXPcc' 
+BOT_TOKEN = '6180592335:AAFLKZ60x7efxzPgmo70DIqkB7HrifkXgrs' 
 CHANNEL_ID =  -1001485074571
 ADMIN_ID = 505658283
 async def approve_request (chat_join: ChatJoinRequest, bot: Bot):
