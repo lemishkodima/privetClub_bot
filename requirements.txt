@@ -45,7 +45,6 @@ regex==2023.6.3
 requests==2.31.0
 rsa==4.9
 simple-websocket==0.10.1
-socketio==0.2.1
 tqdm==4.65.0
 typing_extensions==4.7.1
 uritemplate==4.1.1
