@@ -37,7 +37,7 @@ async def send_channel_link(message: types.Message):
         user_data = [message.from_user.id, message.from_user.username, message.from_user.first_name]
         append_data_to_sheet(user_data, "1nCSQBIwryKNs13N_9MH8C6OMMjHBCXiMhRs5Q6TkxtA", "A:C")
 
-        await bot.send_message(text=msg, reply_markup=markup, disable_web_page_preview=True)
+        await bot.send_message(text=msg, reply_markup=markup)
         # await message.answer(text=msg2, disable_web_page_preview=True)
    
 # async def approve_request (chat_join: ChatJoinRequest, bot: Bot):
