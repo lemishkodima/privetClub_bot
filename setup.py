@@ -16,6 +16,12 @@ BOT_TOKEN = '6180592335:AAFLKZ60x7efxzPgmo70DIqkB7HrifkXgrs'
 CHANNEL_ID =  -1001485074571
 ADMIN_ID = 505658283
 
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
+
+class Form(StatesGroup):
+    Broadcast = State()  # Состояние для рассылки
+
 async def approve_request(chat_join: ChatJoinRequest, bot: Bot):
     start_msg = "Ваша заявка одобрена, для получения ссылки нажмите Start⬇️"
     start_button = KeyboardButton(text='Start')
@@ -59,13 +65,51 @@ def append_data_to_sheet(user_data, spreadsheet_id, range_name):
     return response
  
 
+@dp.message(Form.Broadcast)
+async def process_broadcast(message: types.Message, state: FSMContext):
+    # Зчитування тексту розсилки
+    broadcast_text = message.text
+    await state.clear()  # Вихід зі стану розсилки
+
+    # Зчитування всіх користувачів з Google Sheets
+    creds = Credentials.from_service_account_file("maxim.json")
+    service = build('sheets', 'v4', credentials=creds)
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId="1M0WEMEVhVn-cdu47fSTnwMAHeTnK5TGaSKKTP1rB2Es", range="steelrain_bot!A:C").execute()
+    users = result.get('values', [])
+
+    results = []
+
+    for index, user in enumerate(users, start=2):
+        try:
+            user_id = user[0]
+            await bot.send_message(chat_id=user_id, text=broadcast_text, disable_web_page_preview=True)
+            results.append({'Index': index, 'User ID': user_id, 'Status': 'True'})
+        except Exception as e:
+            results.append({'Index': index, 'User ID': user_id, 'Status': 'False'})
+            logging.error(f"Не удалось отправить сообщение пользователю {user_id}: {e}")
+
+    # Збереження результатів у файл
+    file_path = 'broadcast_results.csv'
+    await save_results_to_csv(results, file_path)
+    
+    # Відправка файлу з результатами адміністратору
+    document = FSInputFile(file_path)
+    await message.answer_document(document, caption="Рассылка завершена. Результаты сохранены в broadcast_results.csv")
+
+async def save_results_to_csv(results, file_path):
+    with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['Index', 'User ID', 'Status']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in results:
+            writer.writerow(result)
+
 async def start():
     logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - [%(levelname)s] - %(name)s -"
                            "(%(filename)s.%(funcName)s(%(lineno)d) - %(message)s"
                     )
-    bot: Bot = Bot(token=BOT_TOKEN)
-    dp = Dispatcher ()
     dp.chat_join_request.register (approve_request, F.chat.id ==CHANNEL_ID)
 
     try:
