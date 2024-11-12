@@ -30,14 +30,14 @@ async def approve_request(chat_join: ChatJoinRequest, bot: Bot):
 @dp.message(F.text.lower() == "start")
 async def send_channel_link(message: types.Message):
         msg = "Ваша заявка одобрена!\n\nВступить в канал: https://t.me/+f4ClsdHxOVNlNGUy"
-        button = InlineKeyboardButton(text='ВСТУПИТЬ', url='https://t.me/+f4ClsdHxOVNlNGUy')
+        button = InlineKeyboardButton(text='ВСТУПИТЬ', url='https://t.me/+f4ClsdHxOVNlNGUy', disable_web_page_preview=True)   
         markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
         # msg2 = "В качестве подарка дарим Вам подписку на наш закрытый канал с сигналами и разборами акций РФ в 🇷🇺 - https://t.me/+__lAiNBlmP02ZGUy"
 
         user_data = [message.from_user.id, message.from_user.username, message.from_user.first_name]
         append_data_to_sheet(user_data, "1nCSQBIwryKNs13N_9MH8C6OMMjHBCXiMhRs5Q6TkxtA", "A:C")
 
-        await message.answer(text=msg, disable_web_page_preview=True)
+        await bot.send_message(text=msg, reply_markup=markup, disable_web_page_preview=True)
         # await message.answer(text=msg2, disable_web_page_preview=True)
    
 # async def approve_request (chat_join: ChatJoinRequest, bot: Bot):
